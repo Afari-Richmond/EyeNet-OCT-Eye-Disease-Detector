@@ -21,15 +21,32 @@ export default function LoginPage() {
         <Card className="w-full md:w-5/12 max-w-2xl p-8 md:p-10 rounded-3xl shadow-2xl border border-primary/10 bg-card/90 backdrop-blur-lg mt-12">
           <div className="mb-6 text-center">
             <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-1 tracking-tight">
-              Sign In
+              Sign Up
             </h1>
             <p className="text-base text-muted-foreground font-medium">
-              Welcome back! Please sign in to continue your journey.
+              Get started with EyeNet - early detection, better outcomes.
             </p>
           </div>
 
           <form action="" className="space-y-6">
             <div className="space-y-3">
+              <div className="flex-1">
+                <label
+                  htmlFor="name"
+                  className="block text-base font-semibold mb-1"
+                >
+                  Name
+                </label>
+                <div className="relative">
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your name"
+                    className="pl-12 py-2 text-base rounded-xl bg-card bg-opacity-80 border border-primary focus:outline-none focus:ring-2 focus:ring-primary text-white placeholder:text-muted-foreground"
+                    required
+                  />
+                </div>
+              </div>
               <div>
                 <label
                   htmlFor="email"
@@ -70,6 +87,25 @@ export default function LoginPage() {
                   />
                 </div>
               </div>
+
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-base font-semibold mb-1"
+                >
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    className="pl-12 py-2 text-base rounded-xl bg-card bg-opacity-80 border border-primary focus:outline-none focus:ring-2 focus:ring-primary text-white placeholder:text-muted-foreground"
+                    required
+                  />
+                </div>
+              </div>
             </div>
             <Button
               className="w-full py-2 text-base rounded-xl font-bold bg-gradient-to-r from-primary to-primary/80 shadow-md hover:from-primary/80 hover:to-primary cursor-pointer"
@@ -77,30 +113,19 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
-          <div className="my-6 border-t border-primary/10" />
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center justify-center gap-2 text-sm">
-              <span className="text-muted-foreground">
-                Don&apos;t have an account?
-              </span>
-              <Link
-                href="/signup"
-                className="text-primary font-semibold underline hover:text-primary/80 transition-colors"
-              >
-                Sign up
-              </Link>
-              <span className="text-muted-foreground">·</span>
-              <Link
-                href="/forgot-password"
-                className="text-primary underline hover:text-primary/80 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          </div>
+         <div className="my-6 border-t border-primary/10" />
+          <p className="text-base text-center text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-primary font-semibold underline hover:text-primary/80 transition-colors"
+            >
+              Sign up
+            </Link>
+          </p>
         </Card>
       </Container>
     </div>
