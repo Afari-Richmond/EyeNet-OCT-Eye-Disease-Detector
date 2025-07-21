@@ -8,12 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ScanEye, Cloud, ShieldCheck, Activity } from "lucide-react";
 
-
-
 export default function Home() {
   const [emotion, setEmotion] = useState(50);
   const [mounted, setMounted] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
+
   const emotions = [
     { value: 0, label: "😔 Down", color: "from-blue-500/50" },
     { value: 25, label: "😊 Content", color: "from-green-500/50" },
@@ -29,37 +27,41 @@ export default function Home() {
   const currentEmotion =
     emotions.find((em) => Math.abs(emotion - em.value) < 15) || emotions[2];
 
-    const features = [
-  {
-    icon: ScanEye, // You can import an appropriate icon from lucide-react or use a custom SVG
-    title: "AI-Powered Detection",
-    description: "Leverages deep learning to detect retinal diseases from OCT scans with high accuracy.",
-    color: "from-purple-500/20",
-    delay: 0.2,
-  },
-  {
-    icon: Cloud,
-    title: "Cloud-Based Access",
-    description: "Upload, analyze, and access diagnostic results from anywhere, anytime.",
-    color: "from-sky-500/20",
-    delay: 0.4,
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure & Private",
-    description: "Your scans and data are encrypted and stored with industry-grade security.",
-    color: "from-emerald-500/20",
-    delay: 0.6,
-  },
-  {
-    icon: Activity,
-    title: "Real-Time Analysis",
-    description: "Receive diagnostic feedback instantly with confidence scoring.",
-    color: "from-pink-500/20",
-    delay: 0.8,
-  },
-];
-
+  const features = [
+    {
+      icon: ScanEye,
+      title: "AI-Powered Detection",
+      description:
+        "Leverages deep learning to detect retinal diseases from OCT scans with high accuracy.",
+      color: "from-purple-500/20",
+      delay: 0.2,
+    },
+    {
+      icon: Cloud,
+      title: "Cloud-Based Access",
+      description:
+        "Upload, analyze, and access diagnostic results from anywhere, anytime.",
+      color: "from-sky-500/20",
+      delay: 0.4,
+    },
+    {
+      icon: ShieldCheck,
+      title: "Secure & Private",
+      description:
+        "Your scans and data are encrypted and stored with industry-grade security.",
+      color: "from-emerald-500/20",
+      delay: 0.6,
+    },
+    {
+      icon: Activity,
+      title: "Real-Time Analysis",
+      description:
+        "Receive diagnostic feedback instantly with confidence scoring.",
+      color: "from-pink-500/20",
+      delay: 0.8,
+    },
+  ];
+  
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
@@ -137,8 +139,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-
-       {/* Enhanced Features Grid */}
+      {/* Enhanced Features Grid */}
       <section className="relative py-20 px-4 overflow-hidden">
         {/* <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background" /> */}
 

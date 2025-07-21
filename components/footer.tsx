@@ -9,7 +9,7 @@ export function Footer() {
           © 2025 EyeNet 1.0 – AI Vision Diagnostics. All rights reserved.
         </p>
         <p>
-            Built with ❤️ by Richmond & Abugri
+            Built with ❤️ by Richmond & Akugri
         </p>
       </div>
     </footer>

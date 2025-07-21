@@ -101,3 +101,41 @@
   }
 }
 
+@layer utilities {
+  .text-foreground {
+    color: var(--foreground);
+  }
+  .text-muted-foreground {
+    color: var(--muted-foreground);
+  }
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .bg-background {
+    background-color: var(--background);
+  }
+  .bg-card {
+    background-color: var(--card);
+  }
+  .bg-muted {
+    background-color: var(--muted);
+  }
+  .bg-primary {
+    background-color: var(--primary);
+  }
+
+  .border-primary {
+    border-color: var(--primary);
+  }
+  .border-primary\/10 {
+    border-color: rgba(155, 201, 178, 0.1); /* fallback transparent green */
+  }
+
+  .hover\:border-primary:hover {
+    border-color: var(--primary);
+  }
+  .hover\:bg-muted:hover {
+    background-color: var(--muted);
+  }
+}
