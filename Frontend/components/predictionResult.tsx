@@ -85,6 +85,7 @@ const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
 
     doc.save(`${patientName}_Diagnosis_Report.pdf`);
   // Allow enough time for download to start
+  window.location.reload();
   };
 
   return (
