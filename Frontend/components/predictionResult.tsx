@@ -1,9 +1,7 @@
-import React, { use, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomModal from "./customModal"; // import your custom modal component
 import { jsPDF } from "jspdf"; // import jsPDF for PDF generation
 import { useRouter } from "next/navigation"; // import useRouter for navigation
-
-
 
 // Define types for prediction result and modal props
 interface PredictionResult {
@@ -16,6 +14,7 @@ interface PredictionResultModalProps {
   onClose: () => void;
   predictionResult: PredictionResult | null;
 }
+
 // create the PredictionResultModal component
 const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
   isOpen,
@@ -27,22 +26,53 @@ const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
   const [patientName, setPatientName] = useState("");
   const [remarks, setRemarks] = useState("");
   const [stage, setStage] = useState("Moderate");
+  const [storedName, setStoredName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const name = localStorage.getItem("user_name");
+      setStoredName(name);
+    }
+  }, []);
 
   // if there is no prediction result, return null to avoid rendering
-  // the modal when there is no data
   if (!predictionResult) return null;
 
-  // Function to generate PDF with details
-  // This function creates a PDF document with the prediction details
+  // ✅ Updated disease recommendations for OCT classes
+  const diseaseRecommendations: Record<string, string[]> = {
+    CNV: [
+      "Schedule a comprehensive retinal exam with OCT follow-up.",
+      "Discuss anti-VEGF therapy options with a retina specialist.",
+      "Avoid smoking and manage cardiovascular risk factors.",
+      "Monitor vision changes and report any distortion promptly.",
+    ],
+    DME: [
+      "Optimize blood glucose, blood pressure, and lipid levels.",
+      "Ask your ophthalmologist about anti-VEGF or steroid therapy.",
+      "Have regular dilated eye exams as advised.",
+      "Maintain a diabetes-friendly diet and regular exercise.",
+    ],
+    DRUSEN: [
+      "Adopt a diet rich in leafy greens and omega-3s.",
+      "Wear UV-protective eyewear outdoors.",
+      "Avoid smoking to reduce progression risk.",
+      "Discuss AREDS2 supplements with your doctor if appropriate.",
+    ],
+    NORMAL: [
+      "No abnormalities detected — continue routine eye checkups.",
+      "Practice the 20-20-20 rule for screen use.",
+      "Maintain a balanced diet and stay hydrated.",
+      "Protect your eyes from UV exposure.",
+    ],
+  };
+
   const generatePDFWithDetails = () => {
+    // Validate that all required fields are filled
+    if (!patientName || !remarks || !stage) {
+      alert("Please fill in all patient details before generating the report.");
+      return;
+    }
 
-  // Validate that all required fields are filled
-  if (!patientName || !remarks || !stage) {
-    alert('Please fill in all patient details before generating the report.');
-    return;
-  }
-
-   
     const doc = new jsPDF();
     const now = new Date();
     const dateStr = now.toLocaleDateString();
@@ -54,10 +84,17 @@ const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
     doc.setFontSize(12);
     doc.text(`Date: ${dateStr}`, 20, 35);
     doc.text(`Time: ${timeStr}`, 120, 35);
-    doc.text(`Doctor: Dr. [Name Placeholder]`, 20, 45); // This placeholder will be replaced with the actual name when authentication is completed
     doc.text(`Patient Name: ${patientName}`, 20, 55);
     doc.text(`Disease: ${predictionResult.prediction}`, 20, 65);
-    doc.text(`Confidence: ${predictionResult.confidence.toFixed(2)}%`, 20, 75);
+    doc.text(
+      `Confidence: ${
+        predictionResult.confidence !== undefined
+          ? predictionResult.confidence.toFixed(2) + "%"
+          : "N/A"
+      }`,
+      20,
+      75
+    );
 
     // Stage indicator color
     let color = "#000000";
@@ -73,19 +110,25 @@ const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
     doc.text("Doctor's Remarks:", 20, 100);
     doc.text(doc.splitTextToSize(remarks || "N/A", 170), 20, 110);
 
-    // Recommendation
-    doc.text(
-      doc.splitTextToSize(
-        "Recommendation: Follow up with a licensed ophthalmologist. Lifestyle changes may be advised depending on the severity.",
-        170
-      ),
-      20,
-      130
-    );
+    // ✅ Disease-specific recommendations
+    const diseaseKey = (predictionResult.prediction || "").trim().toUpperCase();
+    const recs =
+      diseaseRecommendations[diseaseKey] || [
+        "Follow up with a licensed ophthalmologist.",
+        "Maintain a healthy lifestyle with proper diet and exercise.",
+      ];
+
+    let y = 130;
+    doc.text("Recommendations & Tips:", 20, y);
+    y += 10;
+    recs.forEach((tip) => {
+      const wrapped = doc.splitTextToSize(`- ${tip}`, 170);
+      doc.text(wrapped, 25, y);
+      y += wrapped.length * 8;
+    });
 
     doc.save(`${patientName}_Diagnosis_Report.pdf`);
-  // Allow enough time for download to start
-  window.location.reload();
+    window.location.reload();
   };
 
   return (
@@ -102,7 +145,9 @@ const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
 
         <p className="text-md text-gray-600">
           <span className="font-medium">Confidence:</span>{" "}
-          {predictionResult.confidence.toFixed(2)}%
+          {predictionResult.confidence !== undefined
+            ? `${predictionResult.confidence.toFixed(2)}%`
+            : "N/A"}
         </p>
 
         <div className="mt-6 space-y-3 flex flex-col items-center">
@@ -160,10 +205,17 @@ const PredictionResultModal: React.FC<PredictionResultModalProps> = ({
               onChange={(e) => setStage(e.target.value)}
               required
             >
-              <option value="" disabled hidden className="text-gray-800 cursor-pointer ">
+              <option
+                value=""
+                disabled
+                hidden
+                className="text-gray-800 cursor-pointer "
+              >
                 Select Stage
               </option>
-              <option className="text-black bg-[#FF0000] hover:bg-gray-800 cursor-pointer">Critical</option>
+              <option className="text-black bg-[#FF0000] hover:bg-gray-800 cursor-pointer">
+                Critical
+              </option>
               <option className="text-black">Moderate</option>
               <option className="text-black">Early</option>
             </select>

@@ -3,6 +3,7 @@
 import { Container } from "@/components/ui/container";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { account } from "@/lib/appwrite";
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -25,21 +26,23 @@ export default function Dashboard() {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
   const [resultModalOpen, setResultModalOpen] = useState(false);
   const [predictionResult, setPredictionResult] = useState<string | null>(null);
 
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const router = useRouter();
+
+  // Clock updater
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
       setFile(file);
       setPreviewUrl(URL.createObjectURL(file));
@@ -49,7 +52,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragActive(false);
     const droppedFile = e.dataTransfer.files[0];
@@ -72,50 +75,50 @@ export default function Dashboard() {
     setFile(null);
   };
 
-  // Function to handle prediction
-  // This function will be called when the user clicks the "Predict Scan" button
-  const handlePredict = async () => {
-    // show loading modal
-    setLoading(true);
-    // Prompt the user to uplaod a scan if the field is empty
-    if (!file) {
-      alert("Please uploaod an OCT scan for prediction");
-    }
+ const handlePredict = async () => {
+  if (!file) {
+    alert("Please upload an OCT scan for prediction");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
+  setLoading(true);
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
 
-      // Make an API call to the backend for prediction
-      // the call send the file to the backend for prediction
-      // and returns the prediction result
+    const res = await fetch("http://52.91.239.151:8000/api/predict-scan/", {
+      method: "POST",
+      body: formData,
+    });
 
-      const res = await fetch("http://127.0.0.1:8000/api/predict-scan/", {
-        method: "POST",
-        body: formData,
+    const data = await res.json();
+    if (res.ok) {
+      console.log(data);
+
+      // ✅ Ensure correct shape
+      setPredictionResult({
+        prediction: data.prediction,
+        confidence: Number(data.confidence) || 0,
       });
-
-      const data = await res.json();
-      if (res.ok) {
-        console.log(data);
-        setPredictionResult(data);
-        setResultModalOpen(true);
-      } else {
-        alert("Prediction failed: " + data.message);
-      }
-    } catch (error) {
-      setPredictionResult("Error during prediction: " + error.message);
       setResultModalOpen(true);
+    } else {
+      alert("Prediction failed: " + data.message);
     }
+  } catch (error: any) {
+    setPredictionResult({
+      prediction: "Error during prediction",
+      confidence: 0,
+    });
+    setResultModalOpen(true);
+  }
+  setLoading(false);
+};
 
-    setLoading(false);
-  };
 
   return (
-    <div className="min-h-screen bg-background ">
-      <Container className="pt-20 pb-8 space-y-6 ">
-        {/* Header Section */}
+    <div className="min-h-screen bg-background">
+      <Container className="pt-20 pb-8 space-y-6">
+        {/* Header */}
         <div className="flex justify-between items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -131,15 +134,12 @@ export default function Dashboard() {
               })}
             </p>
           </motion.div>
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon"></Button>
-          </div>
         </div>
 
-        {/* Main Grid Layout - Side by Side */}
+        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Quick Actions Card - Left Side */}
-          <Card className="border-primary/10 relative overflow-hidden group pt-[-300px]">
+          {/* Quick Actions */}
+          <Card className="border-primary/10 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent" />
             <CardContent className="p-6 relative">
               <div className="space-y-6">
@@ -148,44 +148,20 @@ export default function Dashboard() {
                     <Sparkles className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Quick Actions</h3>
+                    <h3 className="font-semibold text-lg">
+                      Prediction History
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Your eye care journey starts here
+                      Access your past predictions and reports
                     </p>
                   </div>
                 </div>
-                <div className="grid gap-3 ">
-                  <Button
-                    variant="default"
-                    className={cn(
-                      "w-full justify-between items-center p-6 h-auto group/button",
-                      "bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90",
-                      "transition-all duration-200 group-hover:translate-y-[-2px] cursor-pointer "
-                    )}
-                  >
-                    <div className="flex items-center gap-3 ">
-                      <div className="w-8 h-8 rounded-full bg-green-50  flex items-center justify-center">
-                        <MessageSquare className="w-4 h-4 " />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold text-[#0A1014]">
-                          Start Prediction
-                        </div>
-                        <div className="text-xs  text-[#0A1014]">
-                          Upload OCT Scan
-                        </div>
-                      </div>
-                    </div>
-                    <div className="opacity-0 group-hover/button:opacity-100 transition-opacity">
-                      <ArrowRight className="w-5 h-5 text-[#0A1014]" />
-                    </div>
-                  </Button>
-                </div>
+                 {/* Prediction History */}
               </div>
             </CardContent>
           </Card>
 
-          {/* File Upload Card - Right Side */}
+          {/* Upload Section */}
           <Card className="border-primary/10 relative overflow-hidden group max-w-md mx-auto">
             <CardHeader>
               <CardTitle>Upload OCT Scan</CardTitle>
@@ -248,7 +224,7 @@ export default function Dashboard() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => handleFileSelect(e.target.files[0])}
+                  onChange={(e) => handleFileSelect(e.target.files![0])}
                 />
               </div>
 
@@ -273,8 +249,10 @@ export default function Dashboard() {
                     variant="outline"
                     onClick={() => {
                       handleCancel();
-
-                      document.getElementById("oct-upload").value = null;
+                      const input = document.getElementById(
+                        "oct-upload"
+                      ) as HTMLInputElement;
+                      if (input) input.value = "";
                     }}
                   >
                     Cancel
