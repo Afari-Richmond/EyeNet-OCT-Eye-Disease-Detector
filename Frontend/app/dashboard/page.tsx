@@ -3,7 +3,7 @@
 import { Container } from "@/components/ui/container";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { account } from "@/lib/appwrite";
+
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
