@@ -49,7 +49,7 @@ class PredictDiseaseView(APIView):
             if confidence < 0.5:
                 return Response({
                     "warning": "Low confidence prediction. Please try another image.",
-                    "confidence": confidence
+                    "confidence": round(confidence * 100, 2)
                 }, status=status.HTTP_200_OK)
 
             return Response({
