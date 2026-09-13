@@ -1,5 +1,15 @@
 import React from "react";
 
+interface CustomModalProps {
+  isOpen: boolean;
+  title?: string;
+  children?: React.ReactNode;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+}
+
 const CustomModal = ({
   isOpen,
   title,
@@ -8,7 +18,7 @@ const CustomModal = ({
   onCancel,
   confirmText = "Confirm",
   cancelText = "Cancel",
-}) => {
+}: CustomModalProps) => {
   if (!isOpen) return null;
 
   return (

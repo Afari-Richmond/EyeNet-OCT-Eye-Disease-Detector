@@ -4,7 +4,7 @@ import { jsPDF } from "jspdf"; // import jsPDF for PDF generation
 import { useRouter } from "next/navigation"; // import useRouter for navigation
 
 // Define types for prediction result and modal props
-interface PredictionResult {
+export interface PredictionResult {
   prediction: string;
   confidence: number;
 }

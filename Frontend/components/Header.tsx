@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 
-import { SignInButton } from "./auth/sign-in-button";
 import { ThemeToggle } from "./theme-toggle";
 import { useState } from "react";
 import { Button } from "./ui/button";

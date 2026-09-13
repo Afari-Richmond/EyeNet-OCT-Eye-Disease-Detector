@@ -1,7 +1,12 @@
-// ConfirmModal.jsx
 import React from "react";
 
-const ConfirmModal = ({ isOpen, onConfirm, onCancel }) => {
+interface ConfirmModalProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const ConfirmModal = ({ isOpen, onConfirm, onCancel }: ConfirmModalProps) => {
   if (!isOpen) return null;
 
   return (

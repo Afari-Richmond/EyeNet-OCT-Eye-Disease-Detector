@@ -17,9 +17,9 @@ import {
 import { Sparkles, MessageSquare, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import ConfirmModal from "@/components/confirmModal";
+import ConfirmModal from "@/components/ConfirmModal";
 import LoadingModal from "@/components/loadingModal";
-import PredictionResultModal from "@/components/predictionResult";
+import PredictionResultModal, { PredictionResult } from "@/components/predictionResult";
 
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -27,7 +27,7 @@ export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultModalOpen, setResultModalOpen] = useState(false);
-  const [predictionResult, setPredictionResult] = useState<string | null>(null);
+  const [predictionResult, setPredictionResult] = useState<PredictionResult | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -104,7 +104,7 @@ export default function Dashboard() {
     } else {
       alert("Prediction failed: " + data.message);
     }
-  } catch (error: any) {
+  } catch {
     setPredictionResult({
       prediction: "Error during prediction",
       confidence: 0,

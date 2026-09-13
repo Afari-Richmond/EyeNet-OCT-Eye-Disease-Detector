@@ -1,7 +1,7 @@
 import React from "react";
 import { ClipLoader } from "react-spinners";
 
-const LoadingModal = ({ isOpen }) => {
+const LoadingModal = ({ isOpen }: { isOpen: boolean }) => {
   if (!isOpen) return null;
 
   return (

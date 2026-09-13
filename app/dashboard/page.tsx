@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const [dragActive, setDragActive] = useState(false);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -33,19 +33,18 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
       setFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragActive(false);
     const droppedFile = e.dataTransfer.files[0];
     handleFileSelect(droppedFile);
-    setPreviewUrl(URL.createObjectURL(droppedFile));
   };
 
   const handleCancel = () => {
@@ -176,7 +175,7 @@ export default function Dashboard() {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => handleFileSelect(e.target.files[0])}
+                  onChange={(e) => handleFileSelect(e.target.files![0])}
                 />
               </div>
 
@@ -200,8 +199,10 @@ export default function Dashboard() {
                     variant="outline"
                     onClick={() => {
                       handleCancel();
-
-                      document.getElementById("oct-upload").value = null;
+                      const input = document.getElementById(
+                        "oct-upload"
+                      ) as HTMLInputElement;
+                      if (input) input.value = "";
                     }}
                   >
                     Cancel
