@@ -13,6 +13,11 @@ import tempfile
 
 MODEL_PATH = os.environ.get("MODEL_PATH", "Trained_Model.h5")
 
+# Loaded once per worker process at import time, instead of on every
+# request - repeatedly deserializing a 66MB model was crashing the
+# worker under Render's free-tier 512MB memory limit.
+_model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+
 class PredictDiseaseView(APIView):
     def post(self, request, format=None):
         image_file = request.FILES.get('image')
@@ -27,9 +32,6 @@ class PredictDiseaseView(APIView):
             temp_path = tmp.name
 
         try:
-            # Load model
-            model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-
             # Preprocess image
             img = load_img(temp_path, target_size=(224, 224))
             x = img_to_array(img)
@@ -37,7 +39,7 @@ class PredictDiseaseView(APIView):
             x = preprocess_input(x)
 
             # Predict
-            predictions = model.predict(x)
+            predictions = _model.predict(x)
             predicted_index = int(np.argmax(predictions))
             confidence = float(np.max(predictions))
 
