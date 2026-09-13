@@ -28,12 +28,12 @@ services:
       - key: MODEL_PATH
         value: Trained_Model.h5
       - key: MODEL_S3_BUCKET
-        sync: false
+        value: eyenet-models
       - key: MODEL_S3_KEY
-        sync: false
+        value: Trained_Model.h5
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
         sync: false
       - key: AWS_DEFAULT_REGION
-        sync: false
+        value: us-east-1
