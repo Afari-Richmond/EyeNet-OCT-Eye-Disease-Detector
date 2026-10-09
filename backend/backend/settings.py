@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'accounts',
     'rest_framework_simplejwt',
-    
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -139,11 +139,32 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Scan images: S3 when AWS_SCANS_BUCKET is set (production), local disk
+# otherwise (local dev) - same pattern as the model download in
+# download_model.py, just a separate bucket from MODEL_S3_BUCKET.
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+AWS_SCANS_BUCKET = os.environ.get('AWS_SCANS_BUCKET')
+
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
+    "default": (
+        {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"}
+        if AWS_SCANS_BUCKET
+        else {"BACKEND": "django.core.files.storage.FileSystemStorage"}
+    ),
 }
+
+if AWS_SCANS_BUCKET:
+    AWS_STORAGE_BUCKET_NAME = AWS_SCANS_BUCKET
+    AWS_S3_REGION_NAME = os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_FILE_OVERWRITE = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -166,6 +187,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 

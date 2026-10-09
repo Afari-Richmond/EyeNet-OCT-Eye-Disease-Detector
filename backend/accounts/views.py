@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import (
     RegisterSerializer,
@@ -54,3 +56,17 @@ class ChangePasswordView(APIView):
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
         return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh = request.data.get('refresh')
+        if not refresh:
+            return Response({"refresh": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            RefreshToken(refresh).blacklist()
+        except TokenError:
+            return Response({"refresh": ["Invalid or already blacklisted token."]}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_205_RESET_CONTENT)

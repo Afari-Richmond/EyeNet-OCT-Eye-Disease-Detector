@@ -36,6 +36,9 @@ class PredictDiseaseView(APIView):
             for chunk in image_file.chunks():
                 tmp.write(chunk)
             temp_path = tmp.name
+        # Re-used below to persist the Scan's image - rewind past what
+        # .chunks() already read.
+        image_file.seek(0)
 
         try:
             # Preprocess image
@@ -69,6 +72,7 @@ class PredictDiseaseView(APIView):
                 scan = Scan.objects.create(
                     doctor=request.user,
                     patient=patient,
+                    image=image_file,
                     prediction=prediction,
                     confidence=confidence_pct,
                 )

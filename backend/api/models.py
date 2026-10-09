@@ -29,6 +29,7 @@ class Scan(models.Model):
         blank=True,
         related_name="scans",
     )
+    image = models.ImageField(upload_to="scans/%Y/%m/", null=True, blank=True)
     prediction = models.CharField(max_length=50)
     confidence = models.FloatField()
     report_generated = models.BooleanField(default=False)
