@@ -40,6 +40,7 @@ import { HistoryTab } from "@/components/dashboard/history-tab";
 import { ReportsTab } from "@/components/dashboard/reports-tab";
 import { SettingsTab } from "@/components/dashboard/settings-tab";
 import { PatientsTab } from "@/components/dashboard/patients-tab";
+import { SampleScanPicker } from "@/components/dashboard/sample-scan-picker";
 
 const TABS = ["Overview", "History", "Reports", "Settings", "Patients"] as const;
 type Tab = (typeof TABS)[number];
@@ -161,6 +162,7 @@ export default function Dashboard() {
 
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [warningOpen, setWarningOpen] = useState(false);
+  const [samplePickerOpen, setSamplePickerOpen] = useState(false);
   const [predictionResult, setPredictionResult] = useState<PredictResult | null>(null);
   const [resultsOpen, setResultsOpen] = useState(false);
   const [predictError, setPredictError] = useState<string | null>(null);
@@ -203,6 +205,16 @@ export default function Dashboard() {
       setPendingFile(selected);
       setWarningOpen(true);
     }
+  };
+
+  const handleUseSample = async (src: string) => {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    const name = src.split("/").pop() ?? "sample.jpeg";
+    const sampleFile = new File([blob], name, { type: blob.type || "image/jpeg" });
+    // Curated samples are verified real OCT scans, so skip the non-OCT warning.
+    finalizeFileSelect(sampleFile);
+    setSamplePickerOpen(false);
   };
 
   const handleProceedWarning = () => {
@@ -375,6 +387,15 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground mt-1">
                 Send an OCT image to the AI model for prediction
               </p>
+
+              <div className="mt-4">
+                <button
+                  onClick={() => setSamplePickerOpen(true)}
+                  className="text-xs font-medium text-primary hover:underline cursor-pointer"
+                >
+                  No scan handy? Browse sample scans →
+                </button>
+              </div>
 
               {user && patients.length > 0 && (
                 <div className="mt-4 max-w-xs">
@@ -841,6 +862,12 @@ export default function Dashboard() {
             : undefined
         }
         onUploadNew={handleUploadNew}
+      />
+
+      <SampleScanPicker
+        isOpen={samplePickerOpen}
+        onClose={() => setSamplePickerOpen(false)}
+        onSelect={handleUseSample}
       />
     </div>
   );
