@@ -104,9 +104,13 @@ export default function Home() {
           </h1>
           {/* Enhanced description with better readability */}
           <p className="max-w-[600px] mx-auto text-base md:text-lg text-muted-foreground leading-relaxed tracking-wide">
-            Experience a new era of eye care. EyeNet uses AI to detect eye
-            diseases early, empowering you to protect your vision with
-            confidence.
+            Across resource-constrained healthcare settings — from rural
+            clinics in Africa to overstretched regional hospitals —
+            specialist ophthalmologists are scarce and diagnostic equipment
+            even scarcer. EyeNet puts AI-assisted OCT screening within reach
+            of any clinic with a scan and an internet connection, helping
+            catch CNV, DME, and other sight-threatening conditions early
+            enough to prevent avoidable blindness.
           </p>
         </motion.div>
 

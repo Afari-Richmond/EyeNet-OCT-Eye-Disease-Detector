@@ -8,9 +8,6 @@ export function Footer() {
         <p className="text-sm text-muted-foreground text-center">
           © 2025 EyeNet 1.0 – AI Vision Diagnostics. All rights reserved.
         </p>
-        <p>
-            Built with ❤️ by Richmond & Akugri
-        </p>
       </div>
     </footer>
   );

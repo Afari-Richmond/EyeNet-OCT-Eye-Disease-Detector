@@ -8,7 +8,8 @@ import { SignInButton } from "./auth/sign-in-button";
 import { ThemeToggle } from "./theme-toggle";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 const Header = () => {
   const navItems = [
@@ -17,6 +18,7 @@ const Header = () => {
   ];
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isGuest, logout } = useAuth();
 
   return (
     <div className="w-full fixed top-0 z-50 bg-background/95">
@@ -50,7 +52,31 @@ const Header = () => {
               </nav>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
-                <SignInButton />
+                {user ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground hidden sm:inline">
+                      {user.first_name || user.username}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={logout}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="hidden sm:inline">Logout</span>
+                    </Button>
+                  </div>
+                ) : isGuest ? (
+                  <Link
+                    href="/login"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Guest · Sign in
+                  </Link>
+                ) : (
+                  <SignInButton />
+                )}
                 <Button
                   variant="ghost"
                   size="icon"

@@ -89,6 +89,19 @@
 
   --secondary: #23203a;
   --secondary-foreground: #e8ecf2;
+
+  --muted: #161d22;
+  --muted-foreground: #8f9ba6;
+
+  --accent: #141b1f;
+  --accent-foreground: #e8ecf2;
+
+  --destructive: #f25f5c;
+  --destructive-foreground: #f6fbfa;
+
+  --border: #222b31;
+  --input: #222b31;
+  --ring: #b6e2d3;
 }
 
 
@@ -127,6 +140,10 @@
 
   .border-primary {
     border-color: var(--primary);
+  }
+
+  .font-raleway {
+    font-family: var(--font-raleway), sans-serif;
   }
   .border-primary\/10 {
     border-color: rgba(155, 201, 178, 0.1); /* fallback transparent green */

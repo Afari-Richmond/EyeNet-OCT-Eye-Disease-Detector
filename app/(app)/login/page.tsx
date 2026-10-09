@@ -2,18 +2,47 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { isAxiosError } from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { Lock, Mail } from "lucide-react";
+import { Lock, User as UserIcon } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+  const { login, loginAsGuest } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await login(username, password);
+      router.push("/dashboard");
+    } catch (err) {
+      if (isAxiosError(err) && err.response?.status === 401) {
+        setError("Incorrect username or password.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuest = () => {
+    loginAsGuest();
+    router.push("/dashboard");
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/30">
@@ -28,24 +57,24 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form action="" className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="username"
                   className="block text-base font-semibold mb-1"
                 >
-                  Email
+                  Username
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
+                    id="username"
+                    type="text"
+                    placeholder="Enter your username"
                     className="pl-12 py-2 text-base rounded-xl bg-card bg-opacity-80 border border-primary focus:outline-none focus:ring-2 focus:ring-primary text-white placeholder:text-muted-foreground"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </div>
@@ -71,6 +100,11 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
+
+            {error && (
+              <p className="text-sm text-destructive text-center">{error}</p>
+            )}
+
             <Button
               className="w-full py-2 text-base rounded-xl font-bold bg-gradient-to-r from-primary to-primary/80 shadow-md hover:from-primary/80 hover:to-primary cursor-pointer"
               size="lg"
@@ -78,6 +112,15 @@ export default function LoginPage() {
               disabled={loading}
             >
               {loading ? "Signing in..." : "Sign In"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full py-2 text-base rounded-xl cursor-pointer"
+              size="lg"
+              onClick={handleGuest}
+            >
+              Continue as Guest
             </Button>
           </form>
           <div className="my-6 border-t border-primary/10" />
@@ -91,13 +134,6 @@ export default function LoginPage() {
                 className="text-primary font-semibold underline hover:text-primary/80 transition-colors"
               >
                 Sign up
-              </Link>
-              <span className="text-muted-foreground">·</span>
-              <Link
-                href="/forgot-password"
-                className="text-primary underline hover:text-primary/80 transition-colors"
-              >
-                Forgot password?
               </Link>
             </div>
           </div>
