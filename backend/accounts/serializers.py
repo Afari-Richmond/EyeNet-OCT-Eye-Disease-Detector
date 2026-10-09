@@ -16,16 +16,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ('username', 'email', 'first_name', 'last_name', 'password')
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
             password=validated_data['password']
         )
         return user
@@ -34,3 +38,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 # Login Serializer (using username instead of email)
 class CustomLoginSerializer(TokenObtainPairSerializer):
     username_field = 'username'  # tell it to expect `username` not `email`
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_doctor')
+        read_only_fields = ('id', 'username', 'is_doctor')
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])

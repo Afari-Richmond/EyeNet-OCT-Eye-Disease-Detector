@@ -1,11 +1,15 @@
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .serializers import CustomLoginSerializer
 
-from .serializers import RegisterSerializer
+from .serializers import (
+    RegisterSerializer,
+    CustomLoginSerializer,
+    UserSerializer,
+    PasswordChangeSerializer,
+)
 
 # Registration View with success message
 class RegisterView(generics.CreateAPIView):
@@ -20,17 +24,33 @@ class RegisterView(generics.CreateAPIView):
         return Response({
             "message": "Registration successful!",
             "email": serializer.data.get("email"),
-            "username": serializer.data.get("username")
+            "username": serializer.data.get("username"),
+            "first_name": serializer.data.get("first_name"),
+            "last_name": serializer.data.get("last_name"),
         }, status=status.HTTP_201_CREATED)
-
-# Custom Login View (optional customization)
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        # You can add custom claims here
-        token['username'] = user.username
-        return token
 
 class CustomLoginView(TokenObtainPairView):
     serializer_class = CustomLoginSerializer
+
+
+class MeView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if not request.user.check_password(serializer.validated_data['old_password']):
+            return Response({"old_password": ["Incorrect password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.set_password(serializer.validated_data['new_password'])
+        request.user.save()
+        return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
