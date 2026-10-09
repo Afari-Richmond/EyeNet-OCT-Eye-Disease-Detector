@@ -27,7 +27,7 @@ const DISEASE_RECOMMENDATIONS: Record<string, string[]> = {
     "Discuss AREDS2 supplements with your doctor if appropriate.",
   ],
   NORMAL: [
-    "No abnormalities detected — continue routine eye checkups.",
+    "No abnormalities detected. Continue routine eye checkups.",
     "Practice the 20-20-20 rule for screen use.",
     "Maintain a balanced diet and stay hydrated.",
     "Protect your eyes from UV exposure.",
@@ -113,7 +113,7 @@ export function ResultsModal({
       try {
         await markReportGenerated(result.scan_id);
       } catch {
-        // non-critical — the PDF already downloaded successfully
+        // non-critical, the PDF already downloaded successfully
       }
     }
   };

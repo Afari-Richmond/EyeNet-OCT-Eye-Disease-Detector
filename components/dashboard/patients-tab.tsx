@@ -108,7 +108,7 @@ export function PatientsTab() {
       )}
       {!loading && patients.length === 0 && (
         <p className="text-sm text-muted-foreground mt-4">
-          No patients yet — add one to start linking scans to them.
+          No patients yet. Add one to start linking scans to them.
         </p>
       )}
 

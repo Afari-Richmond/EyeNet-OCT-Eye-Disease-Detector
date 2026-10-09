@@ -36,7 +36,7 @@ export function ReportsTab() {
       {error && <p className="text-sm text-destructive mt-4">{error}</p>}
       {!loading && !error && scans.length === 0 && (
         <p className="text-sm text-muted-foreground mt-4">
-          No reports yet — download a PDF from a scan&apos;s result to see it here.
+          No reports yet. Download a PDF from a scan&apos;s result to see it here.
         </p>
       )}
 
@@ -45,7 +45,7 @@ export function ReportsTab() {
           <li key={scan.id} className="flex items-center justify-between py-3">
             <div>
               <p className="text-sm font-medium text-foreground">
-                {scan.patient_name ?? "—"}
+                {scan.patient_name ?? "No patient"}
               </p>
               <p className="text-[11px] text-muted-foreground">
                 {new Date(scan.created_at).toLocaleString()}

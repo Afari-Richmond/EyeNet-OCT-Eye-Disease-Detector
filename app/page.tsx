@@ -1,5 +1,6 @@
 "use client";
 import { Ripple } from "@/components/magicui/ripple";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -104,13 +105,16 @@ export default function Home() {
           </h1>
           {/* Enhanced description with better readability */}
           <p className="max-w-[600px] mx-auto text-base md:text-lg text-muted-foreground leading-relaxed tracking-wide">
-            Across resource-constrained healthcare settings — from rural
-            clinics in Africa to overstretched regional hospitals —
-            specialist ophthalmologists are scarce and diagnostic equipment
-            even scarcer. EyeNet puts AI-assisted OCT screening within reach
-            of any clinic with a scan and an internet connection, helping
-            catch CNV, DME, and other sight-threatening conditions early
-            enough to prevent avoidable blindness.
+            AI-assisted OCT screening that helps catch sight-threatening
+            conditions early, wherever a scan and an internet connection can
+            reach.{" "}
+            <Link
+              href="/about"
+              className="underline underline-offset-4 hover:text-foreground transition-colors"
+            >
+              Learn why this matters
+            </Link>
+            .
           </p>
         </motion.div>
 

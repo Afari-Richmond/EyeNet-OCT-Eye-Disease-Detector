@@ -26,7 +26,7 @@ export function PreUploadWarningModal({
         <p className="text-sm text-muted-foreground mt-3">
           If the image you selected is not an OCT scan, the model will still
           squeeze it into one of its four trained classes (CNV, DME, DRUSEN,
-          or NORMAL) — it has no way to recognize or reject a non-OCT image.
+          or NORMAL). It has no way to recognize or reject a non-OCT image.
           Only proceed if you&apos;re confident this is a genuine OCT scan.
         </p>
         <div className="mt-6 flex justify-center gap-3">
