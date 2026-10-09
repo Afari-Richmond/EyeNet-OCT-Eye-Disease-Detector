@@ -88,6 +88,7 @@ export type Scan = {
   id: number;
   patient: number | null;
   patient_name: string | null;
+  image: string | null;
   prediction: string;
   confidence: number;
   report_generated: boolean;
@@ -125,6 +126,10 @@ export async function fetchMe() {
 export async function updateMe(payload: Partial<Pick<User, "first_name" | "last_name" | "email">>) {
   const { data } = await api.patch<User>("/api/auth/me/", payload);
   return data;
+}
+
+export async function logoutUser(refresh: string) {
+  await api.post("/api/auth/logout/", { refresh });
 }
 
 export async function changePassword(oldPassword: string, newPassword: string) {

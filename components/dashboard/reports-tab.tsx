@@ -43,13 +43,25 @@ export function ReportsTab() {
       <ul className="mt-4 divide-y divide-border">
         {scans.map((scan) => (
           <li key={scan.id} className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                {scan.patient_name ?? "No patient"}
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                {new Date(scan.created_at).toLocaleString()}
-              </p>
+            <div className="flex items-center gap-3">
+              {scan.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={scan.image}
+                  alt="Scan thumbnail"
+                  className="w-10 h-10 rounded-lg object-cover border border-border shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-muted shrink-0" />
+              )}
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {scan.patient_name ?? "No patient"}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {new Date(scan.created_at).toLocaleString()}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <span

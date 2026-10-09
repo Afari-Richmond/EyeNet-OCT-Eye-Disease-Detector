@@ -184,13 +184,17 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      listPatients().then(setPatients).catch(() => {});
-    } else {
+    if (!user) {
       setPatients([]);
       setSelectedPatientId(null);
+      return;
     }
-  }, [user]);
+    // Also refetch on returning to Overview, so a patient added from the
+    // Patients tab shows up in this dropdown without a page reload.
+    if (activeTab === "Overview") {
+      listPatients().then(setPatients).catch(() => {});
+    }
+  }, [user, activeTab]);
 
   const finalizeFileSelect = (selected: File) => {
     setPreviewUrl((prev) => {

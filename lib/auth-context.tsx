@@ -11,10 +11,12 @@ import {
   type User,
   fetchMe,
   loginUser,
+  logoutUser,
   registerUser,
   setTokens,
   clearTokens,
   getAccessToken,
+  getRefreshToken,
 } from "@/lib/api";
 
 type RegisterPayload = {
@@ -77,6 +79,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
+    const refresh = getRefreshToken();
+    if (refresh) {
+      // Best-effort: blacklist server-side, but don't block the UI on it.
+      logoutUser(refresh).catch(() => {});
+    }
     clearTokens();
     setUser(null);
     setIsGuest(false);
